@@ -1,11 +1,22 @@
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
+# 11.12.2023
+# schlagen funktioniert
+# springen funktioniert
+# Dame umwandeln geht noch nicht
+# einfacher Computer Gegner ist noch nicht implementiert
+# KI ist noch nicht implementiert
+# KI soll mit minimax und alpha beta pruning implementiert werden
+# KI soll mit pygame implementiert werden
+# KI soll mit pygame und minimax und alpha beta pruning implementiert werden
+
 
 import pygame
 import sys
 
 class DameSpiel:
-    def __init__(self):
+    def __init__(self): # Der Konstruktor der 'DameSpiel'-Klasse, das das 
+        # Spielbrett und die Spielsteine initialisiert
         self.brett_groesse = 8
         self.feld_groesse = 80  # Größe eines Feldes in Pixeln
         self.fenster_groesse = self.feld_groesse * self.brett_groesse
@@ -25,20 +36,24 @@ class DameSpiel:
 
         self.create_board()
 
-    def create_board(self):
+    def create_board(self): # Eine Methode, die das Spielbrett und 
+        # die Spielsteine initialisiert bzw. festlegt
         for row in range(8):
             for col in range(8):
-                if (row + col) % 2 == 1:  # Dunkle Felder
-                    if row < 3:
+               # if (row + col) % 2 == 1:  # Überprüfen, ob die Summe von Reihen- und Spaltenindex ungerade ist = alle Steine stehen aufm weissen Feld
+                if (row + col) % 2 == 0: # Überprüfen, ob die Summe von Reihen- und Spaltenindex gerade  ist = alle Steine stehen aufm schwarzen Feld
+                    if row < 3: # 3 Reihen an Spielsteinen
                         self.steine[(row, col)] = 'B'  # Schwarze Spielsteine
-                    elif row > 4:
+                    elif row > 4: # 3 Reihen an Spielsteinen
                         self.steine[(row, col)] = 'W'  # Weiße Spielsteine
 
-    def debug_log(self, message):
+    def debug_log(self, message): # Eine Methode, die eine Debug-Meldung ausgibt,
+        # wenn der Debug-Modus aktiviert ist
         if self.debug_mode:
             print(message)
 
-    def zeichne_brett(self):
+    def zeichne_brett(self): # Eine Methode, die das Spielbrett und 
+        # die Spielsteine zeichnet
         for row in range(self.brett_groesse):
             for col in range(self.brett_groesse):
                 farbe = self.farben[(row + col) % 2]
@@ -58,7 +73,8 @@ class DameSpiel:
         else:
             pygame.draw.circle(self.fenster, (255, 0, 0), (self.fenster_groesse // 2, 20), 10)
 
-    def on_click(self, pos):
+    def on_click(self, pos): # Eine Methode, die auf Mausklicks 
+        # reagiert und Spielzüge auslöst
         row, col = pos[1] // self.feld_groesse, pos[0] // self.feld_groesse
         self.debug_log(f"Clicked at row: {row}, col: {col}")
 
@@ -68,7 +84,10 @@ class DameSpiel:
             self.ausgewaehlter_spielstein = (row, col)
 
     def is_valid_move(self, start_row, start_col, end_row, end_col, stein):
-        # Prüfen, ob der Zug diagonal ist und nur nach vorne
+        # Eine Methode, die überprüft, ob ein Spielzug gültig ist
+        if (end_row, end_col) in self.steine:  # Ziel muss frei sein
+            return False
+
         if abs(end_row - start_row) == 1 and abs(end_col - start_col) == 1:
             if stein == 'W':
                 return end_row < start_row  # Nur nach oben erlauben
@@ -84,8 +103,10 @@ class DameSpiel:
                 elif stein == 'B':
                     return end_row > start_row  # Nur nach unten erlauben
         return False
-
+    
     def bewege_stein(self, row, col):
+        # Eine Methode, die den ausgewählten Spielstein bewegt und 
+        # den aktuellen Spieler wechselt
         if self.ausgewaehlter_spielstein and self.ausgewaehlter_spielstein in self.steine:
             ausgewaehlte_row, ausgewaehlte_col = self.ausgewaehlter_spielstein
             stein = self.steine[self.ausgewaehlter_spielstein]
@@ -103,13 +124,15 @@ class DameSpiel:
                 self.wechsel_spieler()
                 self.ausgewaehlter_spielstein = None
 
-    def wechsel_spieler(self):
+    def wechsel_spieler(self): # Eine Methode, die den aktuellen Spieler wechselt
         self.aktueller_spieler = 'W' if self.aktueller_spieler == 'B' else 'B'
 
-    def toggle_debug(self, debug_mode):
+    def toggle_debug(self, debug_mode): # Eine Methode, die den Debug-Modus
+        # ein oder ausschaltet
         self.debug_mode = debug_mode
 
-    def starte_spiel(self):
+    def starte_spiel(self):# Eine Methode, die das Spiel 
+        # startet und die Spiellogik enthält
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
