@@ -6,4 +6,4 @@ Mit d wird der Debug Modus aktiviert / deaktiviert.
 
 pygame muss mit pip install pygame installiert werden.
 
-https://www.python-lernen.de/pygame.htm
+[https://www.python-lernen.de/pygame.htm](https://www.python-lernen.de/pygame-tutorial.htm)https://www.python-lernen.de/pygame-tutorial.htm
