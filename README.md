@@ -5,3 +5,5 @@ Der ganze Code wurde mit Fragen und Cut and Paste mit Gpt 3.5, Gpt4 und google B
 Mit d wird der Debug Modus aktiviert / deaktiviert. 
 
 pygame muss mit pip install pygame installiert werden.
+
+https://www.python-lernen.de/pygame.htm
