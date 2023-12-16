@@ -1,9 +1,29 @@
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
-
+#https://chat.openai.com/c/cd06430c-b1b5-4abd-9b13-bcb43ca206e3
 
 import pygame
 import sys
+
+class ZweiterBildschirm:
+    def __init__(self, text):
+        pygame.init()
+        pygame.font.init()
+        self.fenster = pygame.display.set_mode((800,600))
+        pygame.display.set_caption("Zweiter Bildschirm")
+        
+        self.text = text
+        self.font = pygame.font.SysFont('Arial', 24)
+        self.text_rendered = self.font.render(self.text, True, (255, 255, 255))
+              
+    def anzeigen(self):
+        self.fenster.blit(self.hintergrund, (0, 0)) # Hintergrund schwarz
+        self.fenster.blit(self.text_rendered,(50,50))
+        pygame.display.flip()
+        
+    def schließen(self):
+        pygame.quit()
+        sys.exit()
 
 class DameSpiel:
     def __init__(self):
@@ -14,17 +34,102 @@ class DameSpiel:
         self.steine = {}
         self.aktueller_spieler = 'W'
         self.ausgewaehlter_spielstein = None
-
+        self.x_breiter = 800
+        self.y_höher = 800
+        
+        self.zweiter_bildschirm_text = ""
+        
         self.debug_mode = False
 
         pygame.init()
         pygame.font.init()
         self.font = pygame.font.SysFont('Arial', 24)
-        self.fenster = pygame.display.set_mode((self.fenster_groesse, self.fenster_groesse))
+        self.fenster = pygame.display.set_mode((self.fenster_groesse + self.x_breiter, self.fenster_groesse + self.y_höher)) # was ist x und was is y
+
         pygame.display.set_caption("Damespiel")
         self.uhr = pygame.time.Clock()
 
         self.create_board()
+        self.zweiter_bildschirm = None
+        
+        self.zweiter_bildschirm_anzeigen = False
+        self.zweiter_bildschirm = ZweiterBildschirm("""Das Spielbrett zu Beginn
+
+Das Damebrett wird automatisch so platziert, dass links unten ein\n
+dunkles Feld liegt.\n
+Der Startspieler beginnt mit den schwarzen Steinen.\n
+\n
+Das Ziehen der Steine\n
+\n
+Die Steine ziehen ein Feld in diagonaler Richtung, aber nur vorwärts und nur\n
+auf freie dunkle Felder.\n
+\n
+Schlagen\n
+\n
+Es gilt Schlagzwang. Bei Brettspielnetz.de wird das automatisch durchgesetzt.\n
+Wenn sich eigene freie Steine bei einem Zug nicht anklicken lassen, kann das\n
+daran liegen, dass irgendwo auf dem Brett die Möglichkeit zum Schlagen besteht.\n
+Nur einer dieser Steine kann dann ausgewählt werden.\n
+Einfache Steine dürfen nur vorwärts schlagen.\n
+\n
+Wenn du die Auswahl zwischen verschiedenen Schlagmöglichkeiten hast, darfst du\n
+dich frei entscheiden. Weder ein Mehrfachschlagen, noch ein Schlagen\n
+mit einer Dame hat absoluten Vorrang.\n
+\n
+In Dame umwandeln\n
+\n
+Du bekommst eine Dame, wenn einer deiner Steine auf der gegnerischen\n
+Grundlinie stehen bleibt, egal ob durch einen normalen Zug oder durch\n
+ein Schlagen. Der Stein wird dann durch ein "D" gekennzeichnet\n
+(im Brettspiel wird ein zweiter Stein darauf gestellt).\n
+\n
+Eine Dame kannst Du nun sowohl schräg vorwärts als auch rückwärts bewegen\n
+und genauso darfst du mit ihr auch schlagen. Im Gegensatz zur internationalen\n
+Damenvariante darf sich die Dame aber nur um ein Feld vorwärts oder\n
+rückwärts bewegen. Beim Schlagen muss die Dame direkt vor dem gegnerischen\n
+Stein stehen und muss nach dem Schlagen direkt hinter dem\n
+geschlagenen Stein landen.\n
+\n
+Spielende\n
+\n
+Du hast verloren, wenn du keinen Stein mehr hast oder wenn du mit deinen\n
+Steinen keinen Zug mehr machen kannst, weil deine Steine durch deinen\n
+Gegner blockiert sind. Du kannst auch die Partie verloren geben durch\n
+die Aktion "Aufgeben", zum Beispiel weil du so weit zurück liegst,\n
+dass ein weiteres Spielen keinen Sinn mehr macht.\n
+\n
+Unentschieden\n
+\n
+Manche Partien gehen unentschieden aus. In so einem Fall kann keiner der\n
+beiden Spieler mehr gewinnen, es sei denn, der andere macht einen\n
+enormen Fehler. Um endlose Partien zu vermeiden, gibt es bei\n
+Brettspielnetz.de drei Möglichkeiten für ein Unentschieden:\n
+\n
+\n
+Beide Spieler sind sich darin einig geworden, oder\n
+25 Züge wurden gezogen, in denen weder ein Stein geschlagen noch zur\n
+Dame umgewandelt wurde (*), oder\n
+eine Stellung wiederholt sich zum dritten Mal (*).\n
+* Diese Punkte werden von Brettspielnetz nicht automatisch erkannt.\n
+Wenn eine dieser Situationen auftritt, schickt eurem Mitspieler mit dem\n
+nächsten Zug ein Remis-Angebot und schreibt in der Nachricht die Begründung\n
+für euer Remisangebot mit Verweis auf die Spielregel. Sollte er/sie\n
+das Remis-Angebot ohne Begründung ablehnen, müsst ihr über das Kontaktformular\n
+eine Nachricht an die Admins schicken, in der ihr die Spielnummer und\n
+"Dame" notiert und mitteilt, warum ihr eine Remis-Stellung seht.\n
+Wenn es sich um eine Zugwiederholung handelt, müsst ihr auch die 3 Zugnummern\n
+angeben, in denen sich die Stellung wiederholt - wir suchen keine komplette\n
+Partie durch! Der Admin wird das dann prüfen und gegebenenfalls die Partie\n
+auf unentschieden setzen. Wenn es tatsächlich Remis ist, kann es dem Gegner\n
+passieren, dass er wegen Spielverzögerung verwarnt wird! In dieser Zeit\n
+solltet ihr natürlich keine weiteren Züge machen! Bitte beachtet, dass es\n
+sich in den Bedingungen um 25 Vollzüge handelt. Das heißt, wenn\n
+beispielsweise der erste Zug die Zugnummer 41 hatte, ist das Spiel erst\n
+ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
+        
+        
+    def toggle_debug(self, debug_mode):
+        self.debug_mode = debug_mode
 
     def create_board(self):
         for row in range(8):
@@ -217,9 +322,37 @@ class DameSpiel:
                         return True
         return False
 
-    def zeige_ende_nachricht(self, verlierer):
-        gewinner = 'Spieler A' if verlierer == 'B' else 'Spieler B'
-        nachricht = f"{gewinner} hat gewonnen! {verlierer} kann sich nicht mehr bewegen. Noch eine Runde? (Ja/Nein)"
+    def zeige_ende_nachricht(self):
+        gewinner = None
+        verlierer = 'Spieler B'  # Annahme eines Standardwertes für den Verlierer
+      
+        if not any(stein.startswith('W') for stein in self.steine.values()):
+            gewinner = 'Spieler B'
+            verlierer = 'Spieler A'  # Falls Spieler A gewonnen hat
+        elif not any(stein.startswith('B') for stein in self.steine.values()):
+            gewinner = 'Spieler A'
+            verlierer = 'Spieler B'
+
+        if gewinner:
+            nachricht = f"{gewinner} hat gewonnen! {verlierer} kann sich nicht mehr bewegen. Noch eine Runde? (Ja/Nein)"
+            pygame.draw.rect(self.fenster, (0, 0, 0), (100, self.fenster_groesse // 2 - 60, self.fenster_groesse - 200, 120))
+            schrift = pygame.font.SysFont('Arial', 30)
+            text = schrift.render(nachricht, True, (255, 255, 255))
+            text_rect = text.get_rect(center=(self.fenster_groesse // 2, self.fenster_groesse // 2))
+            self.fenster.blit(text, text_rect)
+            pygame.display.flip()
+
+            self.warte_auf_antwort()
+
+
+    def zeige_zweiter_bildschirm(self):
+        if not self.zweiter_bildschirm_anzeigen:
+            self.zweiter_bildschirm = ZweiterBildschirm(self.zweiter_bildschirm_text)
+            self.zweiter_bildschirm_anzeigen = True
+            self.zweiter_bildschirm_anzeigen()
+        else:
+            self.zweiter_bildschirm.schließen()
+            self.zweiter_bildschirm_anzeigen = False
 
     def bewege_stein(self, row, col):
         if self.ausgewaehlter_spielstein and self.ausgewaehlter_spielstein in self.steine:
@@ -308,6 +441,12 @@ class DameSpiel:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_d:
                         self.toggle_debug(not self.debug_mode)
+                    elif event.key == pygame.K_h:
+                        if not self.zweiter_bildschirm_anzeigen:
+                            self.zeige_zweiter_bildschirm()
+                        else:
+                            pygame.quit()
+                            sys.exit()
 
             if self.spiel_ist_vorbei():
                 self.zeige_ende_nachricht()
