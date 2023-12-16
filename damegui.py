@@ -1,6 +1,7 @@
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
-#https://chat.openai.com/c/cd06430c-b1b5-4abd-9b13-bcb43ca206e3
+# r Regelwerk wird in der Konsole angezeigt 
+# Rotenpunkt für den aktiven Spieler anzeigen
 
 import pygame
 import sys
@@ -32,7 +33,7 @@ class DameSpiel:
         self.fenster_groesse = self.feld_groesse * self.brett_groesse
         self.farben = {1: (255, 255, 255), 0: (0, 0, 0)}
         self.steine = {}
-        self.aktueller_spieler = 'W'
+        self.aktueller_spieler = 'B'
         self.ausgewaehlter_spielstein = None
         self.x_breiter = 800
         self.y_höher = 800
