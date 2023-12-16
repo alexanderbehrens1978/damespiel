@@ -1,7 +1,13 @@
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
-# r Regelwerk wird in der Konsole angezeigt 
-# Rotenpunkt für den aktiven Spieler anzeigen
+# offen = r Regelwerk wird in der Konsole angezeigt 
+# Regelwerk wird in einem Fenster(bereich) angezeigt
+# offen = Rotenpunkt für den aktiven Spieler anzeigen
+# offen = Schlagzwang
+# offen = richtige Startaufstellung
+# flutter Umwandlung 
+
+
 
 import pygame
 import sys
