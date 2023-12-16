@@ -1,30 +1,6 @@
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
-# 11.12.2023
-# schlagen funktioniert
-# springen funktioniert
-# Dame umwandeln geht noch nicht
-# einfacher Computer Gegner ist noch nicht implementiert
-# KI ist noch nicht implementiert
-# KI soll mit minimax und alpha beta pruning implementiert werden
-# KI soll mit pygame implementiert werden
-# KI soll mit pygame und minimax und alpha beta pruning implementiert werden
 
-# 12.12.2023
-
-# verwendete KI chatgpt 3.5 turbo und chatgpt 4
-# chatgpt ist irgendwann zickig
-# URL fürs weitere lernen https://www.python-lernen.de/pygame.htm
-
-# Bugs
-# beim auswählen eines steines und unmöglichen zügen stürzt das programm ab
-# Dame umwandeln geht noch nicht (nur Farbe ändern)
-
-# 14.12.2023
-# Dame umwandeln?
-# Der Damestein wird umgewandelt, wenn er die letzte Reihe erreicht
-# Damesteine können sich diagonal in alle Richtungen bewegen
-# schlagen und nochmal schlagen geht mit damesteinen nicht
 
 import pygame
 import sys
@@ -85,7 +61,7 @@ class DameSpiel:
                 self.fenster.blit(text, text_rect)
 
         schrift = pygame.font.SysFont('Arial', 35, True, False)
-        text = schrift.render("Spieler A", True, (23,125,122))
+        text = schrift.render("Spieler W", True, (23,125,122))
         self.fenster.blit(text, [self.fenster_groesse/2 - 70, self.fenster_groesse - 35])
 
         schrift = pygame.font.SysFont('Arial', 35, True, False)
@@ -203,6 +179,10 @@ class DameSpiel:
                 else:
                     self.wechsel_spieler()
                     self.ausgewaehlter_spielstein = None
+        
+        gegner = 'W' if self.aktueller_spieler == 'B' else 'B'
+        if not self.hat_gueltige_zuege(gegner):
+            self.zeige_ende_nachricht(gegner)
 
     def kann_weiter_schlagen(self, row, col):
         stein = self.steine.get((row, col))
@@ -217,6 +197,29 @@ class DameSpiel:
                     return True
         return False
 
+    def hat_gueltige_zuege(self, spieler):
+        for pos, stein in self.steine.items():
+            if stein.startswith(spieler):
+                if self.kann_sich_bewegen(*pos):
+                    return True
+        return False
+
+    def kann_sich_bewegen(self, row, col):
+        stein = self.steine.get((row, col))
+        for direction in [(1, 1), (1, -1), (-1, 1), (-1, -1)]:
+            for distanz in range(1, self.brett_groesse):
+                test_row = row + direction[0] * distanz
+                test_col = col + direction[1] * distanz
+                if 0 <= test_row < self.brett_groesse and 0 <= test_col < self.brett_groesse:
+                    if not self.is_valid_move(row, col, test_row, test_col, stein):
+                        break
+                    if self.is_valid_move(row, col, test_row, test_col, stein):
+                        return True
+        return False
+
+    def zeige_ende_nachricht(self, verlierer):
+        gewinner = 'Spieler A' if verlierer == 'B' else 'Spieler B'
+        nachricht = f"{gewinner} hat gewonnen! {verlierer} kann sich nicht mehr bewegen. Noch eine Runde? (Ja/Nein)"
 
     def bewege_stein(self, row, col):
         if self.ausgewaehlter_spielstein and self.ausgewaehlter_spielstein in self.steine:
@@ -246,6 +249,53 @@ class DameSpiel:
     def toggle_debug(self, debug_mode):
         self.debug_mode = debug_mode
 
+    def zeige_ende_nachricht(self):
+        gewinner = None
+        gewinner = 'Spieler A' if verlierer == 'B' else 'Spieler B'
+        nachricht = f"{gewinner} hat gewonnen! {verlierer} kann sich nicht mehr bewegen. Noch eine Runde? (Ja/Nein)"
+        if not any(stein.startswith('W') for stein in self.steine.values()):
+            gewinner = 'Spieler B'
+        elif not any(stein.startswith('B') for stein in self.steine.values()):
+            gewinner = 'Spieler A'
+
+        if gewinner:
+            nachricht = f"{gewinner} hat gewonnen! Noch eine Runde? (Ja/Nein)"
+            pygame.draw.rect(self.fenster, (0, 0, 0), (100, self.fenster_groesse // 2 - 60, self.fenster_groesse - 200, 120))
+            schrift = pygame.font.SysFont('Arial', 30)
+            text = schrift.render(nachricht, True, (255, 255, 255))
+            text_rect = text.get_rect(center=(self.fenster_groesse // 2, self.fenster_groesse // 2))
+            self.fenster.blit(text, text_rect)
+            pygame.display.flip()
+
+            self.warte_auf_antwort()
+
+    def warte_auf_antwort(self):
+            ja_button = pygame.Rect(100, self.fenster_groesse // 2 + 30, 150, 50)
+            nein_button = pygame.Rect(self.fenster_groesse - 250, self.fenster_groesse // 2 + 30, 150, 50)
+            pygame.draw.rect(self.fenster, (0, 255, 0), ja_button)  # Grüner Ja-Button
+            pygame.draw.rect(self.fenster, (255, 0, 0), nein_button)  # Roter Nein-Button
+
+            schrift = pygame.font.SysFont('Arial', 30)
+            ja_text = schrift.render('Ja', True, (0, 0, 0))
+            nein_text = schrift.render('Nein', True, (0, 0, 0))
+            self.fenster.blit(ja_text, (ja_button.x + 50, ja_button.y + 10))
+            self.fenster.blit(nein_text, (nein_button.x + 40, nein_button.y + 10))
+            pygame.display.flip()
+
+            warten = True
+            while warten:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if ja_button.collidepoint(event.pos):
+                            self.__init__()  # Spiel zurücksetzen und eine neue Runde starten
+                            return
+                        elif nein_button.collidepoint(event.pos):
+                            pygame.quit()
+                            sys.exit()
+
     def starte_spiel(self):
         while True:
             for event in pygame.event.get():
@@ -258,6 +308,9 @@ class DameSpiel:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_d:
                         self.toggle_debug(not self.debug_mode)
+
+            if self.spiel_ist_vorbei():
+                self.zeige_ende_nachricht()
 
             self.zeichne_brett()
             self.debug_log()
