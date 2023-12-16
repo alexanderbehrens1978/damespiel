@@ -7,7 +7,3 @@ Mit d wird der Debug Modus aktiviert / deaktiviert.
 Es wird automatisch überprüft ob pygame installiert wurde oder nicht.
 
 https://www.python-lernen.de/pygame-tutorial.htm
-
-# Umwandlung nach flutter ist noch offen
-# Umwandlung nach laravel mit vue. Js ist # offen
-# Umwandlung nach bootstrap, css, javascript, html php ist noch offen
