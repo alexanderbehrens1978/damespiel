@@ -22,14 +22,12 @@ class ZweiterBildschirm:
 
     def anzeigen(self):
         self.fenster.blit(self.hintergrund, (0, 0)) # Hintergrund schwarz
-        #self.fenster.blit(self.text_rendered,(50,50))
-       # pygame.display.flip()
         
         y_offset = 5
         for line in self.text_lines:
             rendered_line = self.font.render(line, True, (255,255,255))
             self.fenster.blit(rendered_line, (650, y_offset))
-            y_offset += 30 # Passen Sie den Abstand zwischen den Zeilen nach Bedarf an
+            y_offset += 30 # Abstand zwischen den Zeilen
         
         pygame.display.flip()   
 
