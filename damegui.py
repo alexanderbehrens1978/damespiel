@@ -86,8 +86,8 @@ class DameSpiel:
             return "Spielregeln konnten nicht geladen werden."
 
 
-    def toggle_debug(self, debug_mode):
-        self.debug_mode = debug_mode
+   # def toggle_debug(self, debug_mode):
+        #self.debug_mode = debug_mode
 
 
     def create_board(self):
