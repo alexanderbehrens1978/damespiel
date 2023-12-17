@@ -1,12 +1,5 @@
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
-# offen = r Regelwerk wird in der Konsole angezeigt 
-# Regelwerk wird in einem Fenster(bereich) angezeigt
-# offen = Rotenpunkt für den aktiven Spieler anzeigen
-# offen = Schlagzwang
-# offen = richtige Startaufstellung
-# flutter Umwandlung 
-
 
 
 import pygame
@@ -16,21 +9,43 @@ class ZweiterBildschirm:
     def __init__(self, text):
         pygame.init()
         pygame.font.init()
-        self.fenster = pygame.display.set_mode((800,600))
-        pygame.display.set_caption("Zweiter Bildschirm")
-        
+        self.fenster = pygame.display.set_mode((1400,800))
+        pygame.display.set_caption("Damespiel")
+        self.hintergrund = pygame.Surface(self.fenster.get_size())
+        self.hintergrund = self.hintergrund.convert()
+        self.hintergrund.fill((80, 80, 8)) # Schwarzer Hintergrund
         self.text = text
-        self.font = pygame.font.SysFont('Arial', 24)
+        self.text_lines = text.split('\n')
+        self.font = pygame.font.SysFont('Arial', 12)
         self.text_rendered = self.font.render(self.text, True, (255, 255, 255))
-              
+
+
     def anzeigen(self):
         self.fenster.blit(self.hintergrund, (0, 0)) # Hintergrund schwarz
-        self.fenster.blit(self.text_rendered,(50,50))
-        pygame.display.flip()
+        #self.fenster.blit(self.text_rendered,(50,50))
+       # pygame.display.flip()
         
+        y_offset = 5
+        for line in self.text_lines:
+            rendered_line = self.font.render(line, True, (255,255,255))
+            self.fenster.blit(rendered_line, (650, y_offset))
+            y_offset += 30 # Passen Sie den Abstand zwischen den Zeilen nach Bedarf an
+        
+        pygame.display.flip()   
+
+
+    def clear(self):
+        SCHWARZ = (255,255,255)
+        screen = pygame.display.set_mode((1400,800))
+        screen.fill(SCHWARZ)
+        pygame.display.flip()
+
+
     def schließen(self):
-        pygame.quit()
-        sys.exit()
+        self.fenster = None
+        pygame.display.set_mode((1400,800)) # Setze die Fenstergröße zurück
+
+
 
 class DameSpiel:
     def __init__(self):
@@ -41,111 +56,51 @@ class DameSpiel:
         self.steine = {}
         self.aktueller_spieler = 'B'
         self.ausgewaehlter_spielstein = None
-        self.x_breiter = 800
-        self.y_höher = 800
-        
-        self.zweiter_bildschirm_text = ""
-        
+        self.x_breiter = 600
+        self.y_höher = 150
+        self.rahmenbreite = 5 # Definieren der Rahmenbreite in Pixel
+        self.zweiter_bildschirm_text = ""     
         self.debug_mode = False
-
         pygame.init()
         pygame.font.init()
         self.font = pygame.font.SysFont('Arial', 24)
         self.fenster = pygame.display.set_mode((self.fenster_groesse + self.x_breiter, self.fenster_groesse + self.y_höher)) # was ist x und was is y
-
         pygame.display.set_caption("Damespiel")
         self.uhr = pygame.time.Clock()
-
         self.create_board()
         self.zweiter_bildschirm = None
-        
         self.zweiter_bildschirm_anzeigen = False
-        self.zweiter_bildschirm = ZweiterBildschirm("""Das Spielbrett zu Beginn
+        self.zweiter_bildschirm_text = self.lade_spielregeln()
 
-Das Damebrett wird automatisch so platziert, dass links unten ein\n
-dunkles Feld liegt.\n
-Der Startspieler beginnt mit den schwarzen Steinen.\n
-\n
-Das Ziehen der Steine\n
-\n
-Die Steine ziehen ein Feld in diagonaler Richtung, aber nur vorwärts und nur\n
-auf freie dunkle Felder.\n
-\n
-Schlagen\n
-\n
-Es gilt Schlagzwang. Bei Brettspielnetz.de wird das automatisch durchgesetzt.\n
-Wenn sich eigene freie Steine bei einem Zug nicht anklicken lassen, kann das\n
-daran liegen, dass irgendwo auf dem Brett die Möglichkeit zum Schlagen besteht.\n
-Nur einer dieser Steine kann dann ausgewählt werden.\n
-Einfache Steine dürfen nur vorwärts schlagen.\n
-\n
-Wenn du die Auswahl zwischen verschiedenen Schlagmöglichkeiten hast, darfst du\n
-dich frei entscheiden. Weder ein Mehrfachschlagen, noch ein Schlagen\n
-mit einer Dame hat absoluten Vorrang.\n
-\n
-In Dame umwandeln\n
-\n
-Du bekommst eine Dame, wenn einer deiner Steine auf der gegnerischen\n
-Grundlinie stehen bleibt, egal ob durch einen normalen Zug oder durch\n
-ein Schlagen. Der Stein wird dann durch ein "D" gekennzeichnet\n
-(im Brettspiel wird ein zweiter Stein darauf gestellt).\n
-\n
-Eine Dame kannst Du nun sowohl schräg vorwärts als auch rückwärts bewegen\n
-und genauso darfst du mit ihr auch schlagen. Im Gegensatz zur internationalen\n
-Damenvariante darf sich die Dame aber nur um ein Feld vorwärts oder\n
-rückwärts bewegen. Beim Schlagen muss die Dame direkt vor dem gegnerischen\n
-Stein stehen und muss nach dem Schlagen direkt hinter dem\n
-geschlagenen Stein landen.\n
-\n
-Spielende\n
-\n
-Du hast verloren, wenn du keinen Stein mehr hast oder wenn du mit deinen\n
-Steinen keinen Zug mehr machen kannst, weil deine Steine durch deinen\n
-Gegner blockiert sind. Du kannst auch die Partie verloren geben durch\n
-die Aktion "Aufgeben", zum Beispiel weil du so weit zurück liegst,\n
-dass ein weiteres Spielen keinen Sinn mehr macht.\n
-\n
-Unentschieden\n
-\n
-Manche Partien gehen unentschieden aus. In so einem Fall kann keiner der\n
-beiden Spieler mehr gewinnen, es sei denn, der andere macht einen\n
-enormen Fehler. Um endlose Partien zu vermeiden, gibt es bei\n
-Brettspielnetz.de drei Möglichkeiten für ein Unentschieden:\n
-\n
-\n
-Beide Spieler sind sich darin einig geworden, oder\n
-25 Züge wurden gezogen, in denen weder ein Stein geschlagen noch zur\n
-Dame umgewandelt wurde (*), oder\n
-eine Stellung wiederholt sich zum dritten Mal (*).\n
-* Diese Punkte werden von Brettspielnetz nicht automatisch erkannt.\n
-Wenn eine dieser Situationen auftritt, schickt eurem Mitspieler mit dem\n
-nächsten Zug ein Remis-Angebot und schreibt in der Nachricht die Begründung\n
-für euer Remisangebot mit Verweis auf die Spielregel. Sollte er/sie\n
-das Remis-Angebot ohne Begründung ablehnen, müsst ihr über das Kontaktformular\n
-eine Nachricht an die Admins schicken, in der ihr die Spielnummer und\n
-"Dame" notiert und mitteilt, warum ihr eine Remis-Stellung seht.\n
-Wenn es sich um eine Zugwiederholung handelt, müsst ihr auch die 3 Zugnummern\n
-angeben, in denen sich die Stellung wiederholt - wir suchen keine komplette\n
-Partie durch! Der Admin wird das dann prüfen und gegebenenfalls die Partie\n
-auf unentschieden setzen. Wenn es tatsächlich Remis ist, kann es dem Gegner\n
-passieren, dass er wegen Spielverzögerung verwarnt wird! In dieser Zeit\n
-solltet ihr natürlich keine weiteren Züge machen! Bitte beachtet, dass es\n
-sich in den Bedingungen um 25 Vollzüge handelt. Das heißt, wenn\n
-beispielsweise der erste Zug die Zugnummer 41 hatte, ist das Spiel erst\n
-ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
-        
-        
+
+    def berechne_brett_startpunkt(self):
+        brett_gesamtgroesse  = self.feld_groesse * self.brett_groesse
+        brett_start_x = (self.fenster_groesse + self.x_breiter - brett_gesamtgroesse) // 2
+        brett_start_y = (self.fenster_groesse + self.y_höher - brett_gesamtgroesse) // 2
+        return brett_start_x, brett_start_y
+
+
+    def lade_spielregeln(self):
+        try:
+            with open('spielregeln.txt','r', encoding='utf-8') as file:
+                return file.read()
+        except FileNotFoundError:
+            return "Spielregeln konnten nicht geladen werden."
+
+
     def toggle_debug(self, debug_mode):
         self.debug_mode = debug_mode
+
 
     def create_board(self):
         for row in range(8):
             for col in range(8):
-                if (row + col) % 2 == 0:
+                if (row + col) % 2 != 0:  # Dunkle Felder haben eine ungerade Summe von Reihe und Spalte
                     if row < 3:
                         self.steine[(row, col)] = 'B'  # Schwarze Steine
                     elif row > 4:
                         self.steine[(row, col)] = 'W'  # Weiße Steine
+
 
     def debug_log(self):
         if self.debug_mode:
@@ -157,28 +112,54 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
                 print(f"  Position: {pos}, Stein: {stein}")
             print("================================")
 
+
     def zeichne_brett(self):
+        dunkle_farbe = (0, 0, 0)  # Schwarz
+        helle_farbe = (255, 255, 255)  # Weiß
+        rahmenbreite = 5  # Breite des Rahmens in Pixel
+        rahmenfarbe = (255, 0, 0)  # Farbe des Rahmens, hier rot
+
+        brett_start_x, brett_start_y = self.berechne_brett_startpunkt()
+
+        # Zeichne den Rahmen um das Brett
+        pygame.draw.rect(self.fenster, rahmenfarbe, (brett_start_x - rahmenbreite, brett_start_y - rahmenbreite, self.feld_groesse * self.brett_groesse + rahmenbreite * 2, self.feld_groesse * self.brett_groesse + rahmenbreite * 2), rahmenbreite)
+
         for row in range(self.brett_groesse):
             for col in range(self.brett_groesse):
-                farbe = self.farben[(row + col) % 2]
-                pygame.draw.rect(self.fenster, farbe, (col * self.feld_groesse, row * self.feld_groesse, self.feld_groesse, self.feld_groesse))
+                if (row + col) % 2 == 0:
+                    farbe = helle_farbe
+                else:
+                    farbe = dunkle_farbe
+
+                pygame.draw.rect(self.fenster, farbe, (col * self.feld_groesse + brett_start_x, row * self.feld_groesse + brett_start_y, self.feld_groesse, self.feld_groesse))
+
+        # Zeichne die Spielsteine
         for pos, stein in self.steine.items():
-            farbe = (139, 69, 19) if stein in ['B', 'BD'] else (255, 255, 0)
-            x, y = pos[1] * self.feld_groesse + self.feld_groesse // 2, pos[0] * self.feld_groesse + self.feld_groesse // 2
-            pygame.draw.circle(self.fenster, farbe, (x, y), self.feld_groesse // 2 - 10)
-            if 'D' in stein:  # 'D' im Inneren für Damesteine
+            farbe_stein = (139, 69, 19) if stein in ['B', 'BD'] else (255, 255, 0)
+            x, y = pos[1] * self.feld_groesse + self.feld_groesse // 2 + brett_start_x, pos[0] * self.feld_groesse + self.feld_groesse // 2 + brett_start_y
+            pygame.draw.circle(self.fenster, farbe_stein, (x, y), self.feld_groesse // 2 - 10)
+
+            if 'D' in stein:
                 schrift = pygame.font.SysFont('Arial', 20, True)
                 text = schrift.render('D', True, (0, 0, 0))
                 text_rect = text.get_rect(center=(x, y))
                 self.fenster.blit(text, text_rect)
 
+        # Zeichne den Text für Spieler W und Spieler B
         schrift = pygame.font.SysFont('Arial', 35, True, False)
-        text = schrift.render("Spieler W", True, (23,125,122))
-        self.fenster.blit(text, [self.fenster_groesse/2 - 70, self.fenster_groesse - 35])
 
-        schrift = pygame.font.SysFont('Arial', 35, True, False)
-        text = schrift.render("Spieler B", True, (55,55,55))
-        self.fenster.blit(text, [250, 0]) 
+        # Text für Spieler W
+        text_w = schrift.render("Spieler W", True, (23, 125, 122))
+        text_w_rect = text_w.get_rect(center=(self.fenster_groesse // 2 + self.x_breiter // 2, self.fenster_groesse + self.y_höher // 2 + 50))
+        self.fenster.blit(text_w, text_w_rect)
+
+        # Text für Spieler B
+        text_b = schrift.render("Spieler B", True, (55, 55, 55))
+        text_b_rect = text_b.get_rect(center=(self.fenster_groesse // 2 + self.x_breiter // 2, self.y_höher // 2 - 50))
+        self.fenster.blit(text_b, text_b_rect)
+        
+        pygame.display.flip()
+
 
     def spiel_ist_vorbei(self):
         # Prüfen, ob ein Spieler keine Steine mehr hat
@@ -188,7 +169,21 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
 
 
     def on_click(self, pos):
-        row, col = pos[1] // self.feld_groesse, pos[0] // self.feld_groesse
+        brett_start_x, brett_start_y = self.berechne_brett_startpunkt()
+        brett_gesamtgroesse = self.feld_groesse * self.brett_groesse + self.rahmenbreite * 2
+        brett_start_x = (self.fenster_groesse + self.x_breiter - brett_gesamtgroesse) // 2
+        brett_start_y = (self.fenster_groesse + self.y_höher - brett_gesamtgroesse) // 2
+
+        # Berechne die Position relativ zum Brett
+        pos_x = pos[0] - brett_start_x - self.rahmenbreite
+        pos_y = pos[1] - brett_start_y - self.rahmenbreite
+
+        # Überprüfe, ob der Klick innerhalb des Bretts liegt
+        if 0 <= pos_x < self.feld_groesse * self.brett_groesse and 0 <= pos_y < self.feld_groesse * self.brett_groesse:
+            row, col = pos_y // self.feld_groesse, pos_x // self.feld_groesse
+        else:
+            return
+        
         if self.ausgewaehlter_spielstein:
             if self.is_valid_move(*self.ausgewaehlter_spielstein, row, col, self.steine[self.ausgewaehlter_spielstein]):
                 self.bewege_stein(row, col)
@@ -217,6 +212,7 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
 
         return False
     
+
     def is_valid_dame_move(self, start_row, start_col, end_row, end_col, stein):
         if (end_row, end_col) in self.steine:
             return False
@@ -241,6 +237,7 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
                     return False
 
         return True
+
 
     def is_valid_move(self, start_row, start_col, end_row, end_col, stein):
         if (end_row, end_col) in self.steine:
@@ -269,32 +266,36 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
 
         return False
 
+
     def bewege_stein(self, row, col):
         if self.ausgewaehlter_spielstein and self.ausgewaehlter_spielstein in self.steine:
             ausgewaehlte_row, ausgewaehlte_col = self.ausgewaehlter_spielstein
             stein = self.steine[self.ausgewaehlter_spielstein]
+
             if self.is_valid_move(ausgewaehlte_row, ausgewaehlte_col, row, col, stein):
                 schlagzug = abs(row - ausgewaehlte_row) == 2 and abs(col - ausgewaehlte_col) == 2
                 del self.steine[self.ausgewaehlter_spielstein]
                 self.steine[(row, col)] = stein
 
+                # Behandlung von Schlagzügen
                 if schlagzug:
                     mitte_row = (row + ausgewaehlte_row) // 2
                     mitte_col = (col + ausgewaehlte_col) // 2
                     del self.steine[(mitte_row, mitte_col)]
 
-                    if 'D' in stein and self.kann_weiter_schlagen(row, col):
-                        self.ausgewaehlter_spielstein = (row, col)
-                    else:
-                        self.wechsel_spieler()
-                        self.ausgewaehlter_spielstein = None
-                else:
-                    self.wechsel_spieler()
-                    self.ausgewaehlter_spielstein = None
-        
+                # Beförderung zur Dame
+                if stein == 'W' and row == 0:
+                    self.steine[(row, col)] = 'WD'  # Weiße Dame
+                elif stein == 'B' and row == self.brett_groesse - 1:
+                    self.steine[(row, col)] = 'BD'  # Schwarze Dame
+
+                self.wechsel_spieler()
+                self.ausgewaehlter_spielstein = None
+
         gegner = 'W' if self.aktueller_spieler == 'B' else 'B'
         if not self.hat_gueltige_zuege(gegner):
-            self.zeige_ende_nachricht(gegner)
+            self.zeige_ende_nachricht()
+
 
     def kann_weiter_schlagen(self, row, col):
         stein = self.steine.get((row, col))
@@ -309,12 +310,14 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
                     return True
         return False
 
+
     def hat_gueltige_zuege(self, spieler):
         for pos, stein in self.steine.items():
             if stein.startswith(spieler):
                 if self.kann_sich_bewegen(*pos):
                     return True
         return False
+
 
     def kann_sich_bewegen(self, row, col):
         stein = self.steine.get((row, col))
@@ -328,6 +331,7 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
                     if self.is_valid_move(row, col, test_row, test_col, stein):
                         return True
         return False
+
 
     def zeige_ende_nachricht(self):
         gewinner = None
@@ -353,44 +357,29 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
 
 
     def zeige_zweiter_bildschirm(self):
-        if not self.zweiter_bildschirm_anzeigen:
-            self.zweiter_bildschirm = ZweiterBildschirm(self.zweiter_bildschirm_text)
-            self.zweiter_bildschirm_anzeigen = True
-            self.zweiter_bildschirm_anzeigen()
-        else:
-            self.zweiter_bildschirm.schließen()
-            self.zweiter_bildschirm_anzeigen = False
+            if not self.zweiter_bildschirm_anzeigen:
+                self.zweiter_bildschirm = ZweiterBildschirm(self.zweiter_bildschirm_text)
+                self.zweiter_bildschirm.anzeigen()
+                self.zweiter_bildschirm_anzeigen = True
+            else:
+                # Schließen Sie nur das Hilfefenster
+                if self.zweiter_bildschirm:
+                    self.zweiter_bildschirm.schließen()
+                self.zweiter_bildschirm_anzeigen = False
+                self.zeichne_brett() # Zeichnen Sie das Brett neu, um die Änderungen anzuzeigen
 
-    def bewege_stein(self, row, col):
-        if self.ausgewaehlter_spielstein and self.ausgewaehlter_spielstein in self.steine:
-            ausgewaehlte_row, ausgewaehlte_col = self.ausgewaehlter_spielstein
-            stein = self.steine[self.ausgewaehlter_spielstein]
-            if self.is_valid_move(ausgewaehlte_row, ausgewaehlte_col, row, col, stein):
-                if abs(row - ausgewaehlte_row) == 2 and abs(col - ausgewaehlte_col) == 2:
-                    mitte_row = (row + ausgewaehlte_row) // 2
-                    mitte_col = (col + ausgewaehlte_col) // 2
-                    del self.steine[(mitte_row, mitte_col)]
-
-                del self.steine[self.ausgewaehlter_spielstein]
-                self.steine[(row, col)] = stein
-
-                # Dame-Umwandlung mit 'D' im Inneren
-                if stein == 'W' and row == 0:
-                    self.steine[(row, col)] = 'WD'
-                elif stein == 'B' and row == self.brett_groesse - 1:
-                    self.steine[(row, col)] = 'BD'
-
-                self.wechsel_spieler()
-                self.ausgewaehlter_spielstein = None
 
     def wechsel_spieler(self):
         self.aktueller_spieler = 'W' if self.aktueller_spieler == 'B' else 'B'
 
+
     def toggle_debug(self, debug_mode):
         self.debug_mode = debug_mode
 
+
     def zeige_ende_nachricht(self):
         gewinner = None
+        verlierer = 'Spieler B'  # Annahme eines Standardwertes für den Verlierer
         gewinner = 'Spieler A' if verlierer == 'B' else 'Spieler B'
         nachricht = f"{gewinner} hat gewonnen! {verlierer} kann sich nicht mehr bewegen. Noch eine Runde? (Ja/Nein)"
         if not any(stein.startswith('W') for stein in self.steine.values()):
@@ -409,6 +398,7 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
 
             self.warte_auf_antwort()
 
+
     def warte_auf_antwort(self):
             ja_button = pygame.Rect(100, self.fenster_groesse // 2 + 30, 150, 50)
             nein_button = pygame.Rect(self.fenster_groesse - 250, self.fenster_groesse // 2 + 30, 150, 50)
@@ -426,34 +416,39 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
             while warten:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
+                        self.quit()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if ja_button.collidepoint(event.pos):
                             self.__init__()  # Spiel zurücksetzen und eine neue Runde starten
                             return
                         elif nein_button.collidepoint(event.pos):
-                            pygame.quit()
-                            sys.exit()
+                            self.quit()
+
+
+    def quit(self):
+        pygame.quit()
+        sys.exit()
+
 
     def starte_spiel(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    self.quit()
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     self.on_click(pos)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_d:
                         self.toggle_debug(not self.debug_mode)
-                    elif event.key == pygame.K_h:
-                        if not self.zweiter_bildschirm_anzeigen:
-                            self.zeige_zweiter_bildschirm()
-                        else:
-                            pygame.quit()
-                            sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_h:
+                        self.zeige_zweiter_bildschirm()
+                                     
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        self.quit()
 
             if self.spiel_ist_vorbei():
                 self.zeige_ende_nachricht()
@@ -462,6 +457,7 @@ ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.\n""")
             self.debug_log()
             pygame.display.flip()
             self.uhr.tick(60)
+
 
 spiel = DameSpiel()
 spiel.starte_spiel()

@@ -1,0 +1,32 @@
+Das Spielbrett zu Beginn
+Das Damebrett wird automatisch so platziert, dass links unten ein dunkles Feld liegt. Der Startspieler beginnt mit den schwarzen Steinen.
+Das Ziehen der Steine
+Die Steine ziehen ein Feld in diagonaler Richtung, aber nur vorwärts und nur auf freie dunkle Felder.
+Schlagen
+Es gilt Schlagzwang. Bei Brettspielnetz.de wird das automatisch durchgesetzt. Wenn sich eigene freie Steine bei einem Zug nicht anklicken
+lassen, kann das daran liegen, dass irgendwo auf dem Brett die Möglichkeit zum Schlagen besteht. Nur einer dieser Steine kann dann
+ausgewählt werden. Einfache Steine dürfen nur vorwärts schlagen. Wenn du die Auswahl zwischen verschiedenen Schlagmöglichkeiten hast,
+darfst du dich frei entscheiden. Weder ein Mehrfachschlagen, noch ein Schlagen mit einer Dame hat absoluten Vorrang.
+In Dame umwandeln
+Du bekommst eine Dame, wenn einer deiner Steine auf der gegnerischen Grundlinie stehen bleibt, egal ob durch einen normalen Zug oder durch
+ein Schlagen. Der Stein wird dann durch ein "D" gekennzeichnet (im Brettspiel wird ein zweiter Stein darauf gestellt). Eine Dame kannst Du
+nun sowohl schräg vorwärts als auch rückwärts bewegen und genauso darfst du mit ihr auch schlagen. Im Gegensatz zur internationalen
+Damenvariante darf sich die Dame aber nur um ein Feld vorwärts oder rückwärts bewegen. Beim Schlagen muss die Dame direkt vor dem
+gegnerischen Stein stehen und muss nach dem Schlagen direkt hinter dem geschlagenen Stein landen.
+Spielende
+Du hast verloren, wenn du keinen Stein mehr hast oder wenn du mit deinen Steinen keinen Zug mehr machen kannst, weil deine Steine durch
+deinen Gegner blockiert sind. Du kannst auch die Partie verloren geben durch die Aktion "Aufgeben", zum Beispiel weil du so weit zurück
+liegst, dass ein weiteres Spielen keinen Sinn mehr macht.
+Unentschieden
+Manche Partien gehen unentschieden aus. In so einem Fall kann keiner der beiden Spieler mehr gewinnen, es sei denn, der andere macht einen
+enormen Fehler. Um endlose Partien zu vermeiden, gibt es bei Brettspielnetz.de drei Möglichkeiten für ein Unentschieden:
+Beide Spieler sind sich darin einig geworden, oder 25 Züge wurden gezogen, in denen weder ein Stein geschlagen noch zur Dame umgewandelt
+wurde (*), oder eine Stellung wiederholt sich zum dritten Mal (*). * Diese Punkte werden von Brettspielnetz nicht automatisch erkannt.
+Wenn eine dieser Situationen auftritt, schickt eurem Mitspieler mit dem nächsten Zug ein Remis-Angebot und schreibt in der Nachricht die
+Begründung für euer Remisangebot mit Verweis auf die Spielregel. Sollte er/sie das Remis-Angebot ohne Begründung ablehnen, müsst ihr über
+das Kontaktformular eine Nachricht an die Admins schicken, in der ihr die Spielnummer und "Dame" notiert und mitteilt, warum ihr eine
+Remis-Stellung seht. Wenn es sich um eine Zugwiederholung handelt, müsst ihr auch die 3 Zugnummern angeben, in denen sich die Stellung
+wiederholt - wir suchen keine komplette Partie durch! Der Admin wird das dann prüfen und gegebenenfalls die Partie auf unentschieden setzen.
+Wenn es tatsächlich Remis ist, kann es dem Gegner passieren, dass er wegen Spielverzögerung verwarnt wird! In dieser Zeit solltet ihr
+natürlich keine weiteren Züge machen! Bitte beachtet, dass es sich in den Bedingungen um 25 Vollzüge handelt. Das heißt, wenn beispielsweise
+der erste Zug die Zugnummer 41 hatte, ist das Spiel erst ab dem 66. Zug remis, wenn sich bis dahin nichts getan hat.
