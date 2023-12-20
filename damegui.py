@@ -44,13 +44,11 @@ class ZweiterBildschirm:
         pygame.display.set_mode((1400,800)) # Setze die Fenstergröße zurück
 
 
-
 class DameSpiel:
     def __init__(self):
         self.brett_groesse = 8
         self.feld_groesse = 80
         self.fenster_groesse = self.feld_groesse * self.brett_groesse
-        self.farben = {1: (255, 255, 255), 0: (0, 0, 0)}
         self.steine = {}
         self.aktueller_spieler = 'B'
         self.ausgewaehlter_spielstein = None
@@ -77,18 +75,12 @@ class DameSpiel:
         brett_start_y = (self.fenster_groesse + self.y_höher - brett_gesamtgroesse) // 2
         return brett_start_x, brett_start_y
 
-
     def lade_spielregeln(self):
         try:
             with open('spielregeln.txt','r', encoding='utf-8') as file:
                 return file.read()
         except FileNotFoundError:
             return "Spielregeln konnten nicht geladen werden."
-
-
-   # def toggle_debug(self, debug_mode):
-        #self.debug_mode = debug_mode
-
 
     def create_board(self):
         for row in range(8):
@@ -99,7 +91,6 @@ class DameSpiel:
                     elif row > 4:
                         self.steine[(row, col)] = 'W'  # Weiße Steine
 
-
     def debug_log(self):
         if self.debug_mode:
             print("===== Debug-Informationen =====")
@@ -109,7 +100,6 @@ class DameSpiel:
             for pos, stein in self.steine.items():
                 print(f"  Position: {pos}, Stein: {stein}")
             print("================================")
-
 
     def zeichne_brett(self):
         dunkle_farbe = (0, 0, 0)  # Schwarz
@@ -158,13 +148,11 @@ class DameSpiel:
         
         pygame.display.flip()
 
-
     def spiel_ist_vorbei(self):
         # Prüfen, ob ein Spieler keine Steine mehr hat
         hat_weisse_steine = any(stein.startswith('W') for stein in self.steine.values())
         hat_schwarze_steine = any(stein.startswith('B') for stein in self.steine.values())
         return not hat_weisse_steine or not hat_schwarze_steine
-
 
     def on_click(self, pos):
         brett_start_x, brett_start_y = self.berechne_brett_startpunkt()
@@ -191,25 +179,32 @@ class DameSpiel:
         elif (row, col) in self.steine and self.steine[(row, col)][0] == self.aktueller_spieler:
             self.ausgewaehlter_spielstein = (row, col)
 
-
     def is_valid_move(self, start_row, start_col, end_row, end_col, stein):
-        # Standardbewegung für einfache Steine
+        if (end_row, end_col) in self.steine:
+            return False
+
         if stein in ['W', 'B']:
-            if (end_row, end_col) in self.steine:
+            # Logik für normale Steine
+            # Normale Steine dürfen nur vorwärts schlagen
+            if stein == 'W' and end_row >= start_row:
                 return False
+            if stein == 'B' and end_row <= start_row:
+                return False
+
             if abs(end_row - start_row) == 1 and abs(end_col - start_col) == 1:
-                return (stein == 'W' and end_row < start_row) or (stein == 'B' and end_row > start_row)
+                return True
             elif abs(end_row - start_row) == 2 and abs(end_col - start_col) == 2:
                 mitte_row = (end_row + start_row) // 2
                 mitte_col = (end_col + start_col) // 2
-                return (mitte_row, mitte_col) in self.steine and self.steine[(mitte_row, mitte_col)][0] != stein
+                if (mitte_row, mitte_col) in self.steine and self.steine[(mitte_row, mitte_col)][0] != stein:
+                    return True
+            return False
 
-        # Bewegung für Damesteine
         elif stein in ['WD', 'BD']:
+            # Logik für Damesteine
             return self.is_valid_dame_move(start_row, start_col, end_row, end_col, stein)
 
         return False
-    
 
     def is_valid_dame_move(self, start_row, start_col, end_row, end_col, stein):
         if (end_row, end_col) in self.steine:
@@ -235,35 +230,6 @@ class DameSpiel:
                     return False
 
         return True
-
-
-    def is_valid_move(self, start_row, start_col, end_row, end_col, stein):
-        if (end_row, end_col) in self.steine:
-            return False
-
-        # Bewegung für normale Steine
-        if stein in ['W', 'B']:
-            # Normale Steine dürfen nur vorwärts schlagen
-            if stein == 'W' and end_row >= start_row:
-                return False
-            if stein == 'B' and end_row <= start_row:
-                return False
-
-            if abs(end_row - start_row) == 1 and abs(end_col - start_col) == 1:
-                return True
-            elif abs(end_row - start_row) == 2 and abs(end_col - start_col) == 2:
-                mitte_row = (end_row + start_row) // 2
-                mitte_col = (end_col + start_col) // 2
-                if (mitte_row, mitte_col) in self.steine and self.steine[(mitte_row, mitte_col)][0] != stein:
-                    return True
-            return False
-
-        # Bewegung für Damesteine
-        elif stein in ['WD', 'BD']:
-            return self.is_valid_dame_move(start_row, start_col, end_row, end_col, stein)
-
-        return False
-
 
     def bewege_stein(self, row, col):
         if self.ausgewaehlter_spielstein and self.ausgewaehlter_spielstein in self.steine:
@@ -294,7 +260,6 @@ class DameSpiel:
         if not self.hat_gueltige_zuege(gegner):
             self.zeige_ende_nachricht()
 
-
     def kann_weiter_schlagen(self, row, col):
         stein = self.steine.get((row, col))
         if not stein or 'D' not in stein:
@@ -308,14 +273,12 @@ class DameSpiel:
                     return True
         return False
 
-
     def hat_gueltige_zuege(self, spieler):
         for pos, stein in self.steine.items():
             if stein.startswith(spieler):
                 if self.kann_sich_bewegen(*pos):
                     return True
         return False
-
 
     def kann_sich_bewegen(self, row, col):
         stein = self.steine.get((row, col))
@@ -329,51 +292,6 @@ class DameSpiel:
                     if self.is_valid_move(row, col, test_row, test_col, stein):
                         return True
         return False
-
-
-    def zeige_ende_nachricht(self):
-        gewinner = None
-        verlierer = 'Spieler B'  # Annahme eines Standardwertes für den Verlierer
-      
-        if not any(stein.startswith('W') for stein in self.steine.values()):
-            gewinner = 'Spieler B'
-            verlierer = 'Spieler A'  # Falls Spieler A gewonnen hat
-        elif not any(stein.startswith('B') for stein in self.steine.values()):
-            gewinner = 'Spieler A'
-            verlierer = 'Spieler B'
-
-        if gewinner:
-            nachricht = f"{gewinner} hat gewonnen! {verlierer} kann sich nicht mehr bewegen. Noch eine Runde? (Ja/Nein)"
-            pygame.draw.rect(self.fenster, (0, 0, 0), (100, self.fenster_groesse // 2 - 60, self.fenster_groesse - 200, 120))
-            schrift = pygame.font.SysFont('Arial', 30)
-            text = schrift.render(nachricht, True, (255, 255, 255))
-            text_rect = text.get_rect(center=(self.fenster_groesse // 2, self.fenster_groesse // 2))
-            self.fenster.blit(text, text_rect)
-            pygame.display.flip()
-
-            self.warte_auf_antwort()
-
-
-    def zeige_zweiter_bildschirm(self):
-            if not self.zweiter_bildschirm_anzeigen:
-                self.zweiter_bildschirm = ZweiterBildschirm(self.zweiter_bildschirm_text)
-                self.zweiter_bildschirm.anzeigen()
-                self.zweiter_bildschirm_anzeigen = True
-            else:
-                # Schließen Sie nur das Hilfefenster
-                if self.zweiter_bildschirm:
-                    self.zweiter_bildschirm.schließen()
-                self.zweiter_bildschirm_anzeigen = False
-                self.zeichne_brett() # Zeichnen Sie das Brett neu, um die Änderungen anzuzeigen
-
-
-    def wechsel_spieler(self):
-        self.aktueller_spieler = 'W' if self.aktueller_spieler == 'B' else 'B'
-
-
-    def toggle_debug(self, debug_mode):
-        self.debug_mode = debug_mode
-
 
     def zeige_ende_nachricht(self):
         gewinner = None
@@ -396,6 +314,23 @@ class DameSpiel:
 
             self.warte_auf_antwort()
 
+    def zeige_zweiter_bildschirm(self):
+            if not self.zweiter_bildschirm_anzeigen:
+                self.zweiter_bildschirm = ZweiterBildschirm(self.zweiter_bildschirm_text)
+                self.zweiter_bildschirm.anzeigen()
+                self.zweiter_bildschirm_anzeigen = True
+            else:
+                # Schließen Sie nur das Hilfefenster
+                if self.zweiter_bildschirm:
+                    self.zweiter_bildschirm.schließen()
+                self.zweiter_bildschirm_anzeigen = False
+                self.zeichne_brett() # Zeichnen Sie das Brett neu, um die Änderungen anzuzeigen
+
+    def wechsel_spieler(self):
+        self.aktueller_spieler = 'W' if self.aktueller_spieler == 'B' else 'B'
+
+    def toggle_debug(self, debug_mode):
+        self.debug_mode = debug_mode
 
     def warte_auf_antwort(self):
             ja_button = pygame.Rect(100, self.fenster_groesse // 2 + 30, 150, 50)
@@ -422,11 +357,9 @@ class DameSpiel:
                         elif nein_button.collidepoint(event.pos):
                             self.quit()
 
-
     def quit(self):
         pygame.quit()
         sys.exit()
-
 
     def starte_spiel(self):
         while True:
@@ -440,22 +373,20 @@ class DameSpiel:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_d:
                         self.toggle_debug(not self.debug_mode)
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_h:
+                    elif event.key == pygame.K_h:
                         self.zeige_zweiter_bildschirm()
-                                     
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
+                    elif event.key == pygame.K_q:
                         self.quit()
-
-            if self.spiel_ist_vorbei():
-                self.zeige_ende_nachricht()
+                    if self.spiel_ist_vorbei():
+                        self.zeige_ende_nachricht()
 
             self.zeichne_brett()
             self.debug_log()
             pygame.display.flip()
             self.uhr.tick(60)
 
+    def reset_spiel(self):
+        self.__init__()
 
 spiel = DameSpiel()
 spiel.starte_spiel()
