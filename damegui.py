@@ -1,5 +1,12 @@
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
+# ToDo:
+# Klasse, Methoden, Attribute, Variablen, Konstanten auf englisch ändern
+# Kommentare auf englisch ändern
+# Spielregeln richtig anzeigen
+# Zugwang implementieren
+# Punkte anzeigen
+# jedes mal schlagen erhöht die Punkte um 1
 
 
 import pygame
@@ -19,25 +26,20 @@ class ZweiterBildschirm:
         self.font = pygame.font.SysFont('Arial', 12)
         self.text_rendered = self.font.render(self.text, True, (255, 255, 255))
 
-
     def anzeigen(self):
         self.fenster.blit(self.hintergrund, (0, 0)) # Hintergrund schwarz
-        
         y_offset = 5
         for line in self.text_lines:
             rendered_line = self.font.render(line, True, (255,255,255))
             self.fenster.blit(rendered_line, (650, y_offset))
-            y_offset += 30 # Abstand zwischen den Zeilen
-        
+            y_offset += 30 # Abstand zwischen den Zeilen     
         pygame.display.flip()   
-
 
     def clear(self):
         SCHWARZ = (255,255,255)
         screen = pygame.display.set_mode((1400,800))
         screen.fill(SCHWARZ)
         pygame.display.flip()
-
 
     def schließen(self):
         self.fenster = None
@@ -67,7 +69,6 @@ class DameSpiel:
         self.zweiter_bildschirm = None
         self.zweiter_bildschirm_anzeigen = False
         self.zweiter_bildschirm_text = self.lade_spielregeln()
-
 
     def berechne_brett_startpunkt(self):
         brett_gesamtgroesse  = self.feld_groesse * self.brett_groesse
