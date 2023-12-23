@@ -1,4 +1,7 @@
 Ein Damespiel in Python3.
+
+Das Programm wird über die Main.py gestartet.
+
 Das Programm verwendet die pygame Engine.
 
 Mit d wird der Debug Modus aktiviert / deaktiviert. 
