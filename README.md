@@ -8,6 +8,7 @@ Es wird automatisch überprüft ob pygame installiert wurde oder nicht.
 
 https://www.python-lernen.de/pygame-tutorial.htm
 
+Die Spielregeln hab ich von (https://www.brettspielnetz.de/spielregeln/dame.php)
 
 
 Spielregeln
