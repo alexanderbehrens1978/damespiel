@@ -23,4 +23,4 @@ Das Ziehen der Steine
 
 Die Steine ziehen ein Feld in diagonaler Richtung, aber nur vorwärts und nur auf freie dunkle Felder.
 
-!Das ziehen der Steine(https://images.brettspielnetz.de/spelregels/checkers/schuiven.gif)
+![Das ziehen der Steine](https://images.brettspielnetz.de/spelregels/checkers/schuiven.gif)
