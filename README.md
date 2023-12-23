@@ -10,7 +10,7 @@ https://www.python-lernen.de/pygame-tutorial.htm
 
 
 
-#Spielregeln
+Spielregeln
 
 Das Spielbrett zu Beginn
 
