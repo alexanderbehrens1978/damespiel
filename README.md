@@ -12,5 +12,7 @@ https://www.python-lernen.de/pygame-tutorial.htm
 Spielregeln
 Das Spielbrett zu Beginn
 
-Das Damebrett wird automatisch so platziert, dass links unten ein dunkles Feld liegt. Der Startspieler beginnt mit den schwarzen Steinen
+Das Damebrett wird automatisch so platziert, dass links unten ein dunkles Feld liegt.
+Der Startspieler beginnt mit den schwarzen Steinen
+
 ![Startaufstellung](https://images.brettspielnetz.de/spelregels/checkers/start.gif)
