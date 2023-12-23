@@ -9,7 +9,9 @@ Es wird automatisch überprüft ob pygame installiert wurde oder nicht.
 https://www.python-lernen.de/pygame-tutorial.htm
 
 
-Spielregeln
+
+#Spielregeln
+
 Das Spielbrett zu Beginn
 
 Das Damebrett wird automatisch so platziert, dass links unten ein dunkles Feld liegt.
