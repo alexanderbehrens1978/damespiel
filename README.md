@@ -14,7 +14,9 @@ https://www.python-lernen.de/pygame-tutorial.htm
 
 
 
-Die Spielregeln hab ich von https://www.brettspielnetz.de/spielregeln/dame.php
+Die Spielregeln hab ich von
+
+https://www.brettspielnetz.de/spielregeln/dame.php
 
 
 Spielregeln
