@@ -1,3 +1,5 @@
+# Dateiname: ZweiterBildschirm.py
+# -*- coding: utf-8 -*-
 # debug modus kann mit d ein und ausgeschaltet werden
 # Die Ausgabe erscheint in der Konsole
 # ToDo:
@@ -23,7 +25,7 @@ class ZweiterBildschirm:
         self.hintergrund.fill((80, 80, 8)) # Schwarzer Hintergrund
         self.text = text
         self.text_lines = text.split('\n')
-        self.font = pygame.font.SysFont('Arial', 12)
+        self.font = pygame.font.SysFont('Arial', 13)
         self.text_rendered = self.font.render(self.text, True, (255, 255, 255))
 
     def anzeigen(self):

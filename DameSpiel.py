@@ -1,3 +1,5 @@
+# Dateiname DameSpiel.py
+# -*- coding: utf-8 -*-
 import pygame
 import sys
 from ZweiterBildschirm import ZweiterBildschirm
@@ -10,15 +12,17 @@ class DameSpiel:
         self.steine = {}
         self.aktueller_spieler = 'B'
         self.ausgewaehlter_spielstein = None
-        self.x_breiter = 600
-        self.y_höher = 150
+        #self.x_breiter = 600
+        self.x_breiter = 0
+        #self.y_hoeher = 150
+        self.y_hoeher = 150
         self.rahmenbreite = 5 # Definieren der Rahmenbreite in Pixel
         self.zweiter_bildschirm_text = ""     
         self.debug_mode = False
         pygame.init()
         pygame.font.init()
         self.font = pygame.font.SysFont('Arial', 24)
-        self.fenster = pygame.display.set_mode((self.fenster_groesse + self.x_breiter, self.fenster_groesse + self.y_höher)) # was ist x und was is y
+        self.fenster = pygame.display.set_mode((self.fenster_groesse + self.x_breiter, self.fenster_groesse + self.y_hoeher)) # was ist x und was is y
         pygame.display.set_caption("Damespiel")
         self.uhr = pygame.time.Clock()
         self.create_board()
@@ -29,7 +33,7 @@ class DameSpiel:
     def berechne_brett_startpunkt(self):
         brett_gesamtgroesse  = self.feld_groesse * self.brett_groesse
         brett_start_x = (self.fenster_groesse + self.x_breiter - brett_gesamtgroesse) // 2
-        brett_start_y = (self.fenster_groesse + self.y_höher - brett_gesamtgroesse) // 2
+        brett_start_y = (self.fenster_groesse + self.y_hoeher - brett_gesamtgroesse) // 2
         return brett_start_x, brett_start_y
 
     def lade_spielregeln(self):
@@ -95,12 +99,12 @@ class DameSpiel:
 
         # Text für Spieler W
         text_w = schrift.render("Spieler W", True, (23, 125, 122))
-        text_w_rect = text_w.get_rect(center=(self.fenster_groesse // 2 + self.x_breiter // 2, self.fenster_groesse + self.y_höher // 2 + 50))
+        text_w_rect = text_w.get_rect(center=(self.fenster_groesse // 2 + self.x_breiter // 2, self.fenster_groesse + self.y_hoeher // 2 + 50))
         self.fenster.blit(text_w, text_w_rect)
 
         # Text für Spieler B
         text_b = schrift.render("Spieler B", True, (55, 55, 55))
-        text_b_rect = text_b.get_rect(center=(self.fenster_groesse // 2 + self.x_breiter // 2, self.y_höher // 2 - 50))
+        text_b_rect = text_b.get_rect(center=(self.fenster_groesse // 2 + self.x_breiter // 2, self.y_hoeher // 2 - 50))
         self.fenster.blit(text_b, text_b_rect)
         
         pygame.display.flip()
@@ -115,7 +119,7 @@ class DameSpiel:
         brett_start_x, brett_start_y = self.berechne_brett_startpunkt()
         brett_gesamtgroesse = self.feld_groesse * self.brett_groesse + self.rahmenbreite * 2
         brett_start_x = (self.fenster_groesse + self.x_breiter - brett_gesamtgroesse) // 2
-        brett_start_y = (self.fenster_groesse + self.y_höher - brett_gesamtgroesse) // 2
+        brett_start_y = (self.fenster_groesse + self.y_hoeher - brett_gesamtgroesse) // 2
 
         # Berechne die Position relativ zum Brett
         pos_x = pos[0] - brett_start_x - self.rahmenbreite
@@ -344,6 +348,3 @@ class DameSpiel:
 
     def reset_spiel(self):
         self.__init__()
-
-spiel = DameSpiel()
-spiel.starte_spiel()
